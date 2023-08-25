@@ -11,7 +11,7 @@
 #include "spi.h"
 #include "mpu_9250.h"
 #include "keypad.h"
-
+#include "lcd.h"
 
 #ifndef INCLUDES_TASK_MANAGER_H_
 #define INCLUDES_TASK_MANAGER_H_
@@ -33,6 +33,7 @@ extern TaskHandle_t xuartTaskHandle;
 extern TaskHandle_t xaccTaskHandle;
 extern TaskHandle_t xtempTaskHandle;
 extern TaskHandle_t xkeypadTaskHandle;
+extern TaskHandle_t xLcdTaskHandle;
 
 extern TaskHandle_t xtimerTaskHandle;
 extern TimerHandle_t xAccTimerHandle;
@@ -49,6 +50,7 @@ void vUartHandleCmd(UartDev_T *uartDev);
 void vAccTaskHandler(void *params);
 void vTempTaskHandler(void *params);
 void vKeypadTaskHandler(void *params);
+void vLcdTaskHandler(void *params);
 
 void accTaskCallback(TimerHandle_t xTimer);
 void tempTaskCallback(TimerHandle_t xTimer);

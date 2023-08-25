@@ -71,7 +71,8 @@ Drivers/src/task_manager.o: ../Drivers/src/task_manager.c \
  /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/i2c.h \
  /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/spi.h \
  /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/mpu_9250.h \
- /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/keypad.h
+ /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/keypad.h \
+ /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/lcd.h
 
 /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/task_manager.h:
 
@@ -218,3 +219,5 @@ Drivers/src/task_manager.o: ../Drivers/src/task_manager.c \
 /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/mpu_9250.h:
 
 /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/keypad.h:
+
+/home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/Drivers/includes/lcd.h:

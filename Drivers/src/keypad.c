@@ -25,41 +25,6 @@ char keypad_values[RAW_SIZE][COLUMN_SIZE] = {
 
 char code_value[7] = {0};
 
-/**
- * @brief Debounce the button and give the button status back
- *
- * @param pin
- * @return uint8_t
- */
-uint8_t debounce_button(GPIO_TypeDef *port, uint32_t pin)
-{
-	static uint8_t button_status = 0;
-	uint8_t button_value = 0;
-
-	if((button_status == 0) && !(HAL_GPIO_ReadPin(port, pin)))
-	{
-		button_status = 1;
-		button_value = 1;
-	}
-	else if((button_status == 1) && !(HAL_GPIO_ReadPin(port, pin)))
-	{
-		button_status = 2;
-		button_value = 0;
-	}
-	else if((button_status == 2) && (HAL_GPIO_ReadPin(port, pin)))
-	{
-		button_status = 3;
-		button_value = 0;
-	}
-	else if((button_status == 3) && (HAL_GPIO_ReadPin(port, pin)))
-	{
-		button_status = 0;
-		button_value = 0;
-	}
-
-	return button_value;
-}
-
 
 /**
  * @brief Initialize the keypad
@@ -68,8 +33,8 @@ uint8_t debounce_button(GPIO_TypeDef *port, uint32_t pin)
  */
 void init_keypad(void)
 {
-	/* Set all Column pin to Input */
-	/* Set all Row pins as output pulled up. So pressing a key will put the pin to Low*/
+	/* Set all Column pin to Input pull down */
+	/* Set all Raw pins as output  */
 
 	GPIO_InitTypeDef keypad_gpio_raw;
 	GPIO_InitTypeDef keypad_gpio_col;
@@ -121,7 +86,8 @@ void init_keypad(void)
  * @return key
  */
 char  key_read(void)
-{	char key = '\r';
+{
+	char key = '\r';
 	for(int raw = 0; raw < RAW_SIZE; raw++)
 	{
 		/* Set column pin successively to high */
@@ -148,21 +114,6 @@ char  key_read(void)
 	return key;
 }
 
-/**
- * @brief Get the key char object
- *
- * @param key
- * @return char
- */
-char get_key_char(char key)
-{
-	/* initialize the key with actual pin value */
-	if(key >= '0' && key <= '9')
-	{
-		key += 30;
-	}
-	return key;
-}
 
 
 /**

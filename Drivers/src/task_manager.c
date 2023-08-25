@@ -17,6 +17,7 @@ TaskHandle_t xuartTaskHandle = NULL;
 TaskHandle_t xaccTaskHandle = NULL;
 TaskHandle_t xtempTaskHandle = NULL;
 TaskHandle_t xkeypadTaskHandle = NULL;
+TaskHandle_t xLcdTaskHandle = NULL;
 
 TaskHandle_t xtimerTaskHandle = NULL;
 TimerHandle_t xAccTimerHandle = NULL;
@@ -24,17 +25,38 @@ TimerHandle_t xTempTimerHandle = NULL;
 
 TaskType_T taskType = DEFAULT_TASK;
 
+uint8_t password_state = 0;
+
 
 void vLedTaskHandler(void *params)
 {
+	float temperature = 0.0;
+	char temp_buf[10];
 	while(1)
 	{
-		// Start toggling if notification comes from uart task
-		/*if(notifyAcc || notifyTemp)
+		if(password_state == 0)
 		{
-			HAL_GPIO_TogglePin(GPIOA, LED5_PIN);
-			vTaskDelay(ledDelay);
-		}*/
+			lcd_clear();
+			HAL_Delay(1);
+			lcd_set_cursor(0, 0);
+			HAL_Delay(1);
+			lcd_write_string("Enter Password");
+			HAL_Delay(1);
+		}
+		else
+		{
+			MPU9250GetTemp(&temperature);
+			// Convert float to string
+			sprintf(temp_buf, "%f", temperature);
+			strcat(temp_buf, "°C");
+
+			lcd_clear();
+			HAL_Delay(1);
+			lcd_set_cursor(0, 0);
+			HAL_Delay(1);
+			lcd_write_string(temp_buf);
+			HAL_Delay(1);
+		}
 		HAL_GPIO_TogglePin(GPIOA, LED5_PIN);
 		vTaskDelay(500);
 	}
@@ -289,10 +311,10 @@ void vUartHandleCmd(UartDev_T *uartDev)
 	}
 }
 
-
-
 void vKeypadTaskHandler(void *params)
 {
+	lcd_init();
+	lcd_backlight(1);
 	//char key = '\n';
 	while(1)
 	{
@@ -300,18 +322,80 @@ void vKeypadTaskHandler(void *params)
 
 		if(compare_pin(PASSWORD, code_value))
 		{
+			password_state = 1;
 			pPrintf("Password good\n");
-
+			lcd_clear();
+			HAL_Delay(1);
+			lcd_set_cursor(0, 0);
+			HAL_Delay(1);
+			lcd_write_string("Password good");
+			HAL_Delay(1);
+			lcd_set_cursor(1, 0);
+			HAL_Delay(1);
+			lcd_write_string("Welcome home");
 			/* Turn on green LED */
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
 		}
 		else
 		{
+			password_state = 0;
 			pPrintf("Password wrong\n");
 
+			lcd_clear();
+			HAL_Delay(1);
+			lcd_set_cursor(0, 0);
+			HAL_Delay(1);
+			lcd_write_string("Password Wrong");
+			HAL_Delay(1);
+			lcd_set_cursor(1, 0);
+			HAL_Delay(1);
+			lcd_write_string("Access Denied");
+
 			/* Turn on red LED */
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 		}
 	}
 }
+
+
+void vLcdTaskHandler(void *params)
+{
+	char *text = "EmbeddedThere";
+	char int_to_str[10];
+	int count = 0;
+
+	lcd_init();
+	lcd_backlight(1);
+
+
+	//HD44780_Init(2);
+	while(1)
+	{
+		//HAL_I2C_Master_Transmit(i2cDev.hi2c, I2C_ADDR << 1, (uint8_t *)text, 10, 100);
+
+		sprintf(int_to_str, "%d", count);
+		lcd_clear();
+		HAL_Delay(1);
+		lcd_set_cursor(0, 0);
+		HAL_Delay(1);
+		lcd_write_string(text);
+		HAL_Delay(1);
+		lcd_set_cursor(1, 0);
+		HAL_Delay(1);
+		lcd_write_string(int_to_str);
+		count++;
+		memset(int_to_str, 0, sizeof(int_to_str));
+
+/*		HD44780_Clear();
+		HD44780_SetCursor(0,0);
+		HD44780_PrintStr("STM32 BLUE PILL");
+		HD44780_SetCursor(0,1);
+		HD44780_PrintStr("I2C LCD DEMO");*/
+
+		vTaskDelay(1500);
+	}
+}
+
 

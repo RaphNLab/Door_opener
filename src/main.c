@@ -20,25 +20,21 @@ void Error_Handler(void);
 
 int main(void)
 {
-
 	/*Reset RCC clock configuration to the default reset state*/
 
 	HAL_RCC_DeInit();
-
 
 	/* Update the SystemCoreClock variable*/
 	SystemCoreClockUpdate();
 
 	uartDevConfig(&uartDev, &huart2, uartRxBuffer, uartTxBuffer, 0);
-#ifdef USE_SPI
-	spiDevConfig(&spiDev, &hspi1, spiRxBuffer, spiTxBuffer, 0);
-#else
-	i2cDevConfig(&i2cDev, &hi2c1);
-#endif
+
 	init_keypad();
+	i2cDevConfig(&i2cDev, &hi2c1);
+
 	//MPU9250Reset();
 	//MPU9250Init();
-	 //MPU9250Calibrate(dest1, dest2);
+	//MPU9250Calibrate(dest1, dest2);
 
 	//xTaskCreate(vUartCmdTaskHandler, "Command handler", 500, NULL, 2, &xuartTaskHandle);
 	xTaskCreate(vLedTaskHandler, "LED Task", 500, NULL, 2, &xledTaskHandle);
@@ -48,19 +44,7 @@ int main(void)
 
 	xTaskCreate(vKeypadTaskHandler, "Keypad task", 500, NULL, 2, &xkeypadTaskHandle);
 
-	//xTempTimerHandle = xTimerCreate(
-	//                      "Temperature Task timer",     // Name of timer
-	//					  tempTaskDelay,            // Period of timer (in ticks)
-	//                      pdTRUE,              // Auto-reload
-	//                      (void *)0,            // Timer ID
-	//					  tempTaskCallback);  // Callback function
-
-	//xAccTimerHandle = xTimerCreate(
-	//	                      "Accelerometer Task timer",     // Name of timer
-	//						  accTaskDelay,            // Period of timer (in ticks)
-	//	                      pdTRUE,              // Auto-reload
-	//	                      (void *)0,            // Timer ID
-	//						  accTaskCallback);  // Callback function
+	//xTaskCreate(vLcdTaskHandler, "LCD task", 500, NULL, 2, &xLcdTaskHandle);
 
 	//Start the timer
 	//xTimerStart(xTempTimerHandle, portMAX_DELAY);
