@@ -54,6 +54,10 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.794087825" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 							</tool>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1250641388" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker">
+								<option id="gnu.c.link.option.other.643234607" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other" useByScannerDiscovery="false" valueType="stringList">
+									<listOptionValue builtIn="false" value="-u_printf_float"/>
+									<listOptionValue builtIn="false" value="-u_sprintf_float"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1021621417" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -82,12 +86,19 @@
 						<toolChain id="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug.107704509" name="Ac6 STM32 MCU GCC" superClass="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug" unusedChildren="">
 							<option id="fr.ac6.managedbuild.option.gnu.cross.mcu.1213082712.1070282553" name="Mcu" superClass="fr.ac6.managedbuild.option.gnu.cross.mcu.1213082712"/>
 							<option id="fr.ac6.managedbuild.option.gnu.cross.board.2026332132.1015613070" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board.2026332132"/>
-							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.74441480" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1056358852"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.74441480" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1056358852">
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1185523645" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.776687098" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
+							</tool>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1396774003" name="MCU G++ Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1673093791"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1815269046" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1250641388"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.1069116315" name="MCU G++ Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.60179544"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.archiver.918355302" name="MCU GCC Archiver" superClass="fr.ac6.managedbuild.tool.gnu.archiver.1122540142"/>
-							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.1482876182" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.1810245568"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.1482876182" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.1810245568">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.928046720" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.1505910981" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
+							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
@@ -203,6 +214,13 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/DoorOpener"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/DoorOpener"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

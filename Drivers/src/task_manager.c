@@ -25,40 +25,24 @@ TimerHandle_t xTempTimerHandle = NULL;
 
 TaskType_T taskType = DEFAULT_TASK;
 
-uint8_t password_state = 0;
-
+Bool_T password_state = FALSE;
+uint8_t print_twice = 0;
+//Bool_T stop_system = FALSE;
 
 void vLedTaskHandler(void *params)
 {
-	float temperature = 0.0;
-	char temp_buf[10];
 	while(1)
 	{
-		if(password_state == 0)
+		if((!password_state) && (print_twice < 2))
 		{
-			lcd_clear();
-			HAL_Delay(1);
-			lcd_set_cursor(0, 0);
-			HAL_Delay(1);
-			lcd_write_string("Enter Password");
-			HAL_Delay(1);
+			lcd_write_text("Enter PassWd:", NULL);
+			print_twice++;
 		}
 		else
 		{
-			MPU9250GetTemp(&temperature);
-			// Convert float to string
-			sprintf(temp_buf, "%f", temperature);
-			strcat(temp_buf, "°C");
-
-			lcd_clear();
-			HAL_Delay(1);
-			lcd_set_cursor(0, 0);
-			HAL_Delay(1);
-			lcd_write_string(temp_buf);
-			HAL_Delay(1);
+			HAL_GPIO_TogglePin(GPIOA, LED5_PIN);
+			vTaskDelay(500);
 		}
-		HAL_GPIO_TogglePin(GPIOA, LED5_PIN);
-		vTaskDelay(500);
 	}
 }
 
@@ -313,48 +297,95 @@ void vUartHandleCmd(UartDev_T *uartDev)
 
 void vKeypadTaskHandler(void *params)
 {
+	static uint8_t count_wrong_password = 0;
+	static char try[10];
+	float temperature = 0.0;
+	char temp_buf[10];
+	char text_buf[20] = "TEMP: ";
+
 	lcd_init();
 	lcd_backlight(1);
 	//char key = '\n';
 	while(1)
 	{
+		//lcd_write_text("Enter PassWd:", NULL);
 		get_pin_code(code_value);
 
 		if(compare_pin(PASSWORD, code_value))
 		{
-			password_state = 1;
-			pPrintf("Password good\n");
-			lcd_clear();
-			HAL_Delay(1);
-			lcd_set_cursor(0, 0);
-			HAL_Delay(1);
-			lcd_write_string("Password good");
-			HAL_Delay(1);
-			lcd_set_cursor(1, 0);
-			HAL_Delay(1);
-			lcd_write_string("Welcome home");
+			pPrintf("Good PassWd\n");
+			lcd_write_text("Good PassWd:", NULL);
+			HAL_Delay(2000);
+			lcd_write_text("Welcome:", NULL);
+
 			/* Turn on green LED */
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
+			password_state = TRUE;
 		}
-		else
+		else if(compare_pin(RESET_KEY, code_value))
 		{
-			password_state = 0;
-			pPrintf("Password wrong\n");
+			password_state = FALSE;
+			print_twice = 0;
 
+			//lcd_init();
+			//lcd_backlight(1);
 			lcd_clear();
 			HAL_Delay(1);
 			lcd_set_cursor(0, 0);
-			HAL_Delay(1);
-			lcd_write_string("Password Wrong");
-			HAL_Delay(1);
-			lcd_set_cursor(1, 0);
-			HAL_Delay(1);
-			lcd_write_string("Access Denied");
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+			count_wrong_password = 0;
+		}
+		else if(compare_pin(TEMP_REQ_KEY, code_value) )
+		{
+			if(!password_state)
+			{
+				lcd_write_text("Not Allowed", NULL);
+				HAL_Delay(2000);
+				lcd_write_text("Enter PassWd:", NULL);
+			}
+			else
+			{
+				MPU9250GetTemp(&temperature);
+				pPrintf("MPU9250 Temperature: %d°C\n", (uint8_t)temperature);
+
+				// Convert float to string
+				sprintf(temp_buf, "%d", (uint8_t)temperature);
+				strcat(temp_buf," C");
+				strcat(text_buf, temp_buf);
+
+				lcd_write_text(text_buf, NULL);
+
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+				password_state = FALSE;
+			}
+		}
+		else
+		{
+			count_wrong_password++;
+			//itoa((WRONG_ENTRY_ALLOWED - count_wrong_password), try, 10);
+			sprintf(try, "%d", (WRONG_ENTRY_ALLOWED - count_wrong_password));
+			pPrintf("Wrong PassWd\n");
 
 			/* Turn on red LED */
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+			if(count_wrong_password == 3)
+			{
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+				lcd_write_text("System Broken:", NULL);
+				password_state = FALSE;
+				vTaskEndScheduler();
+			}
+			lcd_write_text("Wrong PassWd:", NULL);
+			HAL_Delay(2000);
+			lcd_write_text("Try again:", NULL);
+			HAL_Delay(2000);
+			lcd_write_text(try, NULL);
+			HAL_Delay(2000);
+			lcd_write_text("Enter PassWd:", NULL);
+			password_state = FALSE;
 		}
 	}
 }
@@ -362,31 +393,19 @@ void vKeypadTaskHandler(void *params)
 
 void vLcdTaskHandler(void *params)
 {
-	char *text = "EmbeddedThere";
-	char int_to_str[10];
-	int count = 0;
-
 	lcd_init();
 	lcd_backlight(1);
-
 
 	//HD44780_Init(2);
 	while(1)
 	{
-		//HAL_I2C_Master_Transmit(i2cDev.hi2c, I2C_ADDR << 1, (uint8_t *)text, 10, 100);
 
-		sprintf(int_to_str, "%d", count);
-		lcd_clear();
 		HAL_Delay(1);
 		lcd_set_cursor(0, 0);
 		HAL_Delay(1);
-		lcd_write_string(text);
+		lcd_write_string("Enter Password");
 		HAL_Delay(1);
-		lcd_set_cursor(1, 0);
-		HAL_Delay(1);
-		lcd_write_string(int_to_str);
-		count++;
-		memset(int_to_str, 0, sizeof(int_to_str));
+//		lcd_write_text("Enter PassWd:", NULL);
 
 /*		HD44780_Clear();
 		HD44780_SetCursor(0,0);
@@ -394,7 +413,7 @@ void vLcdTaskHandler(void *params)
 		HD44780_SetCursor(0,1);
 		HD44780_PrintStr("I2C LCD DEMO");*/
 
-		vTaskDelay(1500);
+		vTaskDelay(200);
 	}
 }
 

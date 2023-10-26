@@ -105,6 +105,24 @@ void lcd_backlight(uint8_t state)
   }
 }
 
+void lcd_write_text(char *text_row1, char *text_row2)
+{
+	lcd_clear();
+	HAL_Delay(2);
+	lcd_set_cursor(0, 0);
+	HAL_Delay(2);
+	lcd_write_string(text_row1);
+	HAL_Delay(2);
+	if(text_row2 != NULL)
+	{
+		lcd_set_cursor(1, 0);
+		HAL_Delay(2);
+		lcd_write_string(text_row2);
+	}
+}
+
+
+
 
 
 

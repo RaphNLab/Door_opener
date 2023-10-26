@@ -40,7 +40,7 @@ all: DoorOpener.elf
 DoorOpener.elf: $(OBJS) $(USER_OBJS) /home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/LinkerScript.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -T"/home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "DoorOpener.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -Xlinker -u_printf_float -Xlinker -u_sprintf_float -T"/home/silvere/Work/Tuto/RTOS/RTOS_Workspace/DoorOpener/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "DoorOpener.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

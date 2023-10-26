@@ -26,9 +26,14 @@
 #define COLUMN_SIZE         4U
 #define RAW_SIZE            COLUMN_SIZE
 #define KEYPAD_SIZE         (COLUMN_SIZE * RAW_SIZE)
-#define END_KEY             '#'
 #define KEY_DEBOUNCE_TIME   1000U
-#define PASSWORD			"1234567"
+
+#define WRONG_ENTRY_ALLOWED	3U
+
+#define PASSWORD			"7777"
+#define RESET_KEY			"99"
+#define TEMP_REQ_KEY		"88"
+#define END_KEY             '#'
 
 
 extern uint32_t col_arr[COLUMN_SIZE];

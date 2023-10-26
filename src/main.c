@@ -32,9 +32,9 @@ int main(void)
 	init_keypad();
 	i2cDevConfig(&i2cDev, &hi2c1);
 
-	//MPU9250Reset();
-	//MPU9250Init();
-	//MPU9250Calibrate(dest1, dest2);
+	MPU9250Reset();
+	MPU9250Init();
+	MPU9250Calibrate(dest1, dest2);
 
 	//xTaskCreate(vUartCmdTaskHandler, "Command handler", 500, NULL, 2, &xuartTaskHandle);
 	xTaskCreate(vLedTaskHandler, "LED Task", 500, NULL, 2, &xledTaskHandle);
